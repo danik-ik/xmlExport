@@ -76,7 +76,7 @@ begin
   Dataset.First;
   while not (Dataset.Eof) do
   begin
-    Node := ParentNode.AddChild('RECORD'); //// заглушка
+    Node := ParentNode.AddChild('RECORD'); //// заглушка //////
     Dataset.Next;
   end;
 
