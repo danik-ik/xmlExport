@@ -23,7 +23,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   private
-    Convertor: TDb2Xml;
+    Convertor: TDb2XmlRoot;
   published
     procedure CreationTest;
     procedure RootNodeTest;
@@ -32,13 +32,21 @@ type
 
   TLayerTestCase = class(TTestCase)
   private
+    Convertor: TDb2XmlRoot;
     Rules: string;
     Dataset: TADOQuery;
     RootNode: IXmlNode;
     XmlDoc: TXMLDocument;
-
+    procedure SaveTest(TestFileName: string);
+    procedure ProcessTable(Layer: TDb2XmlDataLayer; table, OutFile: string);
+  public
+    procedure SetUp; override;
+    procedure TearDown; override;
   published
-
+    // Проверяет только перебор записей и сохранение для каждой записи ноды <Record/>
+    procedure NoLinesSimpleTest;
+    procedure OneLinesSimpleTest;
+    procedure TwoLinesSimpleTest;
   end;
 
 
@@ -53,7 +61,7 @@ var TestDB: TTestDBSetup;
 procedure TRootTestCase.SetUp;
 begin
   inherited;
-  Convertor := TDb2Xml.Create('out\Simple.xml','ROOT_NAME', 'ID=12345');
+  Convertor := TDb2XmlRoot.Create('out\Simple.xml','ROOT_NAME', 'ID=12345');
 end;
 
 procedure TRootTestCase.TearDown;
@@ -68,7 +76,7 @@ begin
 end;
 
 procedure TRootTestCase.RootNodeTest;
-var x: TDb2Xml;
+var x: TDb2XmlRoot;
 begin
   x:= convertor;
   CheckEqualsString(x.RootNode.NodeName, 'ROOT_NAME');
@@ -92,7 +100,6 @@ begin
   end;
 
   CheckEqualsString(etalon, Test);
-
 end;
 
 { TTestDBSetup }
@@ -100,18 +107,118 @@ end;
 procedure TTestDBSetup.SetUp;
 begin
   inherited;
-  Connection := TADOConnection.Create(self);
+  Connection := TADOConnection.Create(nil);
   Connection.ConnectionString := 'FILE NAME=.\TestData\csv.udl';
+  Query :=TADOQuery.Create(nil);
+  Query.Connection := Connection;
 end;
 
 procedure TTestDBSetup.TearDown;
 begin
+  Query.Free;
+  Connection.Free;
   inherited;
+end;
 
+{ TLayerTestCase }
+const
+  SimpleRules = 'Record';
+  FlatRules = 'Record'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c';
+  DeepRules =
+    'Record='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a';
+
+procedure TLayerTestCase.NoLinesSimpleTest;
+Var
+  Layer: TDb2XmlDataLayer;
+begin
+  Layer := TDb2XmlDataLayer.Create(
+    SimpleRules,
+    TestDb.Query);
+  try
+    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple0.xml');
+    SaveTest('simple0.xml');
+  finally
+    Layer.Free;
+  end;
+end;
+
+procedure TLayerTestCase.OneLinesSimpleTest;
+Var
+  Layer: TDb2XmlDataLayer;
+begin
+  Layer := TDb2XmlDataLayer.Create(
+    SimpleRules,
+    TestDb.Query);
+  try
+    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple1.xml');
+    SaveTest('simple1.xml');
+  finally
+    Layer.Free;
+  end;
+end;
+
+procedure TLayerTestCase.TwoLinesSimpleTest;
+Var
+  Layer: TDb2XmlDataLayer;
+begin
+  Layer := TDb2XmlDataLayer.Create(
+    SimpleRules,
+    TestDb.Query);
+  try
+    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple2.xml');
+    SaveTest('simple2.xml');
+  finally
+    Layer.Free;
+  end;
+
+end;
+
+procedure TLayerTestCase.ProcessTable(Layer: TDb2XmlDataLayer; table, OutFile: string);
+begin
+  with TestDb.Query do
+  begin
+    Active := false;
+    sql.Text := 'select * from ' + table;
+    Active := true;
+  end;
+  Layer.Execute(Convertor.RootNode);
+  Convertor.FileName := 'out\'+ OutFile;
+  Convertor.Save;
+end;
+
+procedure TLayerTestCase.SetUp;
+begin
+  inherited;
+  Convertor := TDb2XmlRoot.Create('out\Simple.xml','ROOT_NAME', 'ID=12345');
+end;
+
+procedure TLayerTestCase.TearDown;
+begin
+  inherited;
+end;
+
+procedure TLayerTestCase.SaveTest(TestFileName: string);
+var
+  sl: TStringList;
+  Etalon, test: string;
+begin
+  sl := TStringList.Create;
+  try
+    sl.LoadFromFile('testData\' + TestFileName);
+    etalon := sl.Text;
+    sl.LoadFromFile('Out\'+ TestFileName);
+    test := sl.Text;
+  finally
+    sl.Free;
+  end;
+
+  CheckEqualsString(etalon, Test);
 end;
 
 initialization
   TestFramework.RegisterTest(TRootTestCase.Suite);
-  RegisterTest(TTestDBSetup.Create(TLayerTestCase.Suite));
+
+  TestDb := TTestDBSetup.Create(TLayerTestCase.Suite);
+  RegisterTest(TestDb);
 
 end.
