@@ -1,57 +1,117 @@
 unit TestCases;
 
 interface
-uses
 
- TestFrameWork;
+uses
+ TestFrameWork,
+ db2XML,
+ XMLDoc, XMLIntf, DB, AdoDb,
+ TestExtensions;
 
 type
 
- TTestCaseFirst = class(TTestCase)
+  TTestDBSetup = class(TTestSetup)
   public
-    procedure ch;
+    Connection: TADOConnection;
+    Query: TADOQuery;
+    procedure SetUp; override;
+    procedure TearDown; override;
+  end;
 
- published
+  TRootTestCase = class(TTestCase)
+  public
+    procedure SetUp; override;
+    procedure TearDown; override;
+  private
+    Convertor: TDb2Xml;
+  published
+    procedure CreationTest;
+    procedure RootNodeTest;
+    procedure SaveTest;
+  end;
 
-   procedure TestFirst;
-   procedure TestSecond;
-   procedure TestThird;
+  TLayerTestCase = class(TTestCase)
+  private
+    Rules: string;
+    Dataset: TADOQuery;
+    RootNode: IXmlNode;
+    XmlDoc: TXMLDocument;
 
- end;
+  published
+
+  end;
 
 
 implementation
 
-uses SysUtils;
+uses SysUtils, Classes;
+var TestDB: TTestDBSetup;
 
-procedure TTestCaseFirst.ch;
-var i: extended;
+
+{ TRootTestCase }
+
+procedure TRootTestCase.SetUp;
 begin
-  i:=0;
-  i := i / i;
-  if i = 0 then ShowException(nil, nil);
+  inherited;
+  Convertor := TDb2Xml.Create('out\Simple.xml','ROOT_NAME', 'ID=12345');
 end;
 
-procedure TTestCaseFirst.TestFirst;
+procedure TRootTestCase.TearDown;
 begin
-  Check(1 + 1 = 2, 'Catastrophic arithmetic failure!');
-end;
-procedure TTestCaseFirst.TestSecond;
-
-begin
- Check(1 + 1 = 3, 'Deliberate failure');
+  inherited;
+  Convertor.Free;
 end;
 
-procedure TTestCaseFirst.TestThird;
+procedure TRootTestCase.CreationTest;
+begin
+  Check(true);
+end;
+
+procedure TRootTestCase.RootNodeTest;
+var x: TDb2Xml;
+begin
+  x:= convertor;
+  CheckEqualsString(x.RootNode.NodeName, 'ROOT_NAME');
+  CheckEquals(x.RootNode.Attributes['ID'], 12345);
+end;
+
+procedure TRootTestCase.SaveTest;
 var
- i : Integer;
+  etalon, test: string;
+  sl: TStringList;
 begin
-  i := 0;
-  CheckException( ch, EInvalidOp, 'Invalid floating point operation');
+  Convertor.Save;
+  sl := TStringList.Create;
+  try
+    sl.LoadFromFile('testData\Simple.xml');
+    etalon := sl.Text;
+    sl.LoadFromFile('Out\Simple.xml');
+    test := sl.Text;
+  finally
+    sl.Free;
+  end;
+
+  CheckEqualsString(etalon, Test);
+
+end;
+
+{ TTestDBSetup }
+
+procedure TTestDBSetup.SetUp;
+begin
+  inherited;
+  Connection := TADOConnection.Create(self);
+  Connection.ConnectionString := 'FILE NAME=.\TestData\csv.udl';
+end;
+
+procedure TTestDBSetup.TearDown;
+begin
+  inherited;
+
 end;
 
 initialization
-
- TestFramework.RegisterTest(TTestCaseFirst.Suite);
+  TestFramework.RegisterTest(TRootTestCase.Suite);
+  RegisterTest(TTestDBSetup.Create(TLayerTestCase.Suite));
 
 end.
