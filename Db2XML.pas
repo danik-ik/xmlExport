@@ -21,6 +21,7 @@ uses
     Rules: string;
     Parent_node: IXmlNode;
     Dataset: TDataSet;
+    procedure OneRecordToXml(ParentNode: IXmlNode; Rules: String);
   public
     Constructor Create(Rules: string; Dataset: TDataset);
     procedure Execute(ParentNode: IXmlNode);
@@ -28,7 +29,7 @@ uses
 
 implementation
 
-uses SysUtils, DDD_Str;
+uses SysUtils, classes, DDD_Str;
 
 { TDb2Xml }
 
@@ -71,12 +72,11 @@ begin
 end;
 
 procedure TDb2XmlDataLayer.Execute(ParentNode: IXmlNode);
-var Node: IXMLNode;
 begin
   Dataset.First;
   while not (Dataset.Eof) do
   begin
-    Node := ParentNode.AddChild('RECORD'); //// заглушка //////
+    OneRecordToXml(ParentNode, Self.Rules);
     Dataset.Next;
   end;
 
@@ -85,6 +85,77 @@ end;
 procedure TDb2XmlRoot.setFileName(const Value: string);
 begin
   XmlDoc.FileName := value;
+end;
+
+procedure TDb2XmlDataLayer.OneRecordToXml(ParentNode: IXmlNode;
+  Rules: String);
+var
+  Node: IXMLNode;
+  sl: TStringList;
+  i: integer;
+  RuleLine: string;
+  NodeName, DataField: string;
+  Level: integer;
+  Levels: array of IXMLNode;
+  CurrentLevel: integer;
+begin
+  try
+    sl:=TStringList.Create;
+    SetLength(Levels, 1);
+
+    Levels[0] := ParentNode;
+    // На нулевом уровне -- родитель!!!
+
+    sl.Text := Rules;
+    for i := 0 to sl.Count - 1 do
+    begin
+      RuleLine := sl.Strings[i];
+      // Игнор комментариев и пустых строк
+      if RuleLine[1] = ';' then break;
+      if trim(RuleLine) = '' then break;
+
+      Level := Length(RuleLine) - length(TrimLeft(RuleLine)) + 1;
+
+      NodeName := CutString('=',RuleLine);
+      DataField := RuleLine;
+
+      if Level = Length(Levels) - 1 then
+      begin
+        // Остальсь на том же уровне вложенности
+
+        Node := Levels[Level];
+
+        // Изменилось ли имя?
+        if NodeName <> Node.NodeName then
+        begin
+          Node := Node.ParentNode.AddChild(NodeName);
+          Levels[Level] := Node;
+        end;
+      end
+      else if Level > Length(Levels) - 1 then
+      begin
+        // Углубляемся
+        Node := Levels[Level-1].AddChild(NodeName);
+        SetLength(Levels, Level + 1);
+        Levels[Level] := Node;
+      end
+      else if Level < Length(Levels) - 1 then
+      begin
+        // Всплываем
+        Node := Levels[Level];
+        SetLength(Levels, Level + 1);
+        // Изменилось ли имя?
+        if NodeName <> Node.NodeName then
+        begin
+          Node := Node.ParentNode.AddChild(NodeName);
+          Levels[Level] := Node;
+        end;
+      end
+    end;
+
+  finally
+    sl.Free;
+  end;
 end;
 
 end.

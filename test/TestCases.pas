@@ -4,7 +4,7 @@ interface
 
 uses
  TestFrameWork,
- db2XML,
+ Db2XML,
  XMLDoc, XMLIntf, DB, AdoDb,
  TestExtensions;
 
@@ -122,10 +122,10 @@ end;
 
 { TLayerTestCase }
 const
-  SimpleRules = 'Record';
-  FlatRules = 'Record'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c';
+  SimpleRules = 'RECORD';
+  FlatRules = 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c';
   DeepRules =
-    'Record='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a';
+    'RECORD='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a';
 
 procedure TLayerTestCase.NoLinesSimpleTest;
 Var
@@ -135,7 +135,7 @@ begin
     SimpleRules,
     TestDb.Query);
   try
-    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple0.xml');
+    ProcessTable(Layer, 'TestData\NoRec.csv', 'simple0.xml');
     SaveTest('simple0.xml');
   finally
     Layer.Free;
@@ -150,7 +150,7 @@ begin
     SimpleRules,
     TestDb.Query);
   try
-    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple1.xml');
+    ProcessTable(Layer, 'TestData\OneRec.csv', 'simple1.xml');
     SaveTest('simple1.xml');
   finally
     Layer.Free;
