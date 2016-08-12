@@ -4,10 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs;
+  Dialogs, db2xml, xmldom, XMLIntf, msxmldom, XMLDoc, DB, ADODB;
 
 type
   TForm1 = class(TForm)
+    XMLDocument1: TXMLDocument;
+    ADOQuery1: TADOQuery;
   private
     { Private declarations }
   public
