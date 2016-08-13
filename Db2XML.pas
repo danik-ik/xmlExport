@@ -34,7 +34,7 @@ uses SysUtils, classes, DDD_Str;
 
 constructor TDb2XmlRoot.Create(FileName, RootNodeName, RootNodeParams: string);
 var
-  s: string;
+  ParamName, ParamValue: string;
 begin
   inherited Create;
   XmlDoc := TXMLDocument.Create('');
@@ -45,8 +45,13 @@ begin
     Version := '1.0';
     Encoding := 'UTF-8';
     rootNode:=AddChild(RootNodeName);
-    s := CutString('=', RootNodeParams);
-    rootNode.Attributes[s] := RootNodeParams;
+    while RootNodeParams <> '' do
+    begin
+      ParamValue := CutString(';', RootNodeParams);
+      ParamName := CutString('=', ParamValue);
+
+      rootNode.Attributes[ParamName] := ParamValue;
+    end;
   end;
   XmlDoc.FileName := FileName;
 end;
