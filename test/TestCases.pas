@@ -33,7 +33,6 @@ type
   TLayerTestCase = class(TTestCase)
   private
     Convertor: TDb2XmlRoot;
-    Rules: string;
     Dataset: TADOQuery;
     RootNode: IXmlNode;
     XmlDoc: TXMLDocument;
@@ -48,6 +47,15 @@ type
     procedure NoLinesTest;
     procedure OneLinesTest;
     procedure TwoLinesTest;
+
+    // ѕровер€ет работу с пол€ми:
+    // ѕол€ записываютс€ как тексты вложенных нод
+    procedure NoAttrTest;
+    // ѕол€ записываютс€ как параметры нод
+    procedure OnlyAttrTest;
+    // ѕол€ записываютс€ и как тексты вложенных нод и как параметры нод
+    procedure AttrAndDeepTest;
+
   end;
 
 
@@ -123,16 +131,18 @@ end;
 
 { TLayerTestCase }
 const
-  Rules: array[0..2] of string = (
+  Rules: array[0..3] of string = (
       'RECORD'
-    , 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c'
-    , 'RECORD='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a'
+    , 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  NODE_B=b'#13#10' Node_C=c'#13#10' Node_e=e'#13#10'  NODE_B=b'
+    , 'RECORD='#13#10' #a=a'#13#10' #aaa=a'#13#10' #f=f'#13#10' #e=e'#13#10' #d=d'#13#10' #b=b'
+    , 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c'#13#10' Node_e=e'#13#10'  #param_a=a'#13#10'  #param_b=b'#13#10'  NODE_B=b'
   );
 
-  RuleNames: array[0..2] of string = (
+  RuleNames: array[0..3] of string = (
       'simple'
-    , 'flat'
-    , 'deep'
+    , 'NoAttr'
+    , 'OnlyAttr'
+    , 'Attr&Deep'
   );
 
   TableNames: array[0..2] of string = (
@@ -154,7 +164,7 @@ begin
       'TestData\' + TableNames[TableIndex] + '.csv',
       RuleNames[RuleIndex] + IntToStr(TableIndex) +'.xml'
     );
-    SaveTest('simple0.xml');
+    SaveTest(RuleNames[RuleIndex] + IntToStr(TableIndex) + '.xml');
   finally
     Layer.Free;
   end;
@@ -215,6 +225,21 @@ end;
 procedure TLayerTestCase.TwoLinesTest;
 begin
   LayerTest(2, 0);
+end;
+
+procedure TLayerTestCase.NoAttrTest;
+begin
+  LayerTest(2, 1);
+end;
+
+procedure TLayerTestCase.OnlyAttrTest;
+begin
+  LayerTest(2, 2);
+end;
+
+procedure TLayerTestCase.AttrAndDeepTest;
+begin
+  LayerTest(2, 3);
 end;
 
 initialization

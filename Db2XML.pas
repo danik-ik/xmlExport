@@ -19,7 +19,6 @@ uses
   type TDb2XmlDataLayer = class
   private
     Rules: string;
-    Parent_node: IXmlNode;
     Dataset: TDataSet;
     procedure OneRecordToXml(ParentNode: IXmlNode; Rules: String);
   public
@@ -97,45 +96,22 @@ var
   NodeName, DataField: string;
   Level: integer;
   Levels: array of IXMLNode;
-  CurrentLevel: integer;
 
-  procedure ProcessAttr(NodeName, DataField: string);
+  procedure ProcessAttr(NodeAtLevel: integer; AttrName, DataField: string);
   var
     Node: IXMLNode;
+    Data: string;
   begin
-    ///////
-    if Level = Length(Levels) - 1 then
-    begin
-      // Остальсь на том же уровне вложенности
+    {*
+    Углубляться мы здесь не можем. Нода Уже создана и находится на указанном уровне.
+    *}
+    Node := Levels[NodeAtLevel];
+    if DataField = '' then
+      Data := ''
+    else
+      Data := Dataset.FieldByName(DataField).Value;
 
-      Node := Levels[Level];
-
-      // Изменилось ли имя?
-      if NodeName <> Node.NodeName then
-      begin
-        Node := Node.ParentNode.AddChild(NodeName);
-        Levels[Level] := Node;
-      end;
-    end
-    else if Level > Length(Levels) - 1 then
-    begin
-      // Углубляемся
-      Node := Levels[Level-1].AddChild(NodeName);
-      SetLength(Levels, Level + 1);
-      Levels[Level] := Node;
-    end
-    else if Level < Length(Levels) - 1 then
-    begin
-      // Всплываем
-      Node := Levels[Level];
-      SetLength(Levels, Level + 1);
-      // Изменилось ли имя?
-      if NodeName <> Node.NodeName then
-      begin
-        Node := Node.ParentNode.AddChild(NodeName);
-        Levels[Level] := Node;
-      end;
-    end;
+    Node.Attributes[AttrName] := Data;
   end;
 
   procedure ProcessNode(NodeName, DataField: string);
@@ -200,7 +176,7 @@ begin
       DataField := RuleLine;
 
       if NodeName[1] = '#' then
-        ProcessAttr
+        ProcessAttr(Level - 1, copy(NodeName, 2, length(NodeName)), DataField)
       else
         ProcessNode(NodeName, DataField);
     end;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT_NAME ID="12345">
+  <RECORD>
+    <No_data/>
+    <No_Data2 param_a="AA">
+      <NODE_B>BB</NODE_B>
+    </No_Data2>
+    <Node_C>CC</Node_C>
+    <Node_e param_a="AA" param_b="BB">EE  <NODE_B>BB</NODE_B>
+    </Node_e>
+  </RECORD>
+  <RECORD>
+    <No_data/>
+    <No_Data2 param_a="аА">
+      <NODE_B>бБ</NODE_B>
+    </No_Data2>
+    <Node_C>вВ</Node_C>
+    <Node_e param_a="аА" param_b="бБ">дД  <NODE_B>бБ</NODE_B>
+    </Node_e>
+  </RECORD>
+</ROOT_NAME>

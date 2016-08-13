@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT_NAME ID="12345">
+  <RECORD a="AA" aaa="AA" f="FF" e="EE" d="DD" b="BB"/>
+  <RECORD a="аА" aaa="аА" f="еЕ" e="дД" d="гГ" b="бБ"/>
+</ROOT_NAME>
