@@ -39,14 +39,15 @@ type
     XmlDoc: TXMLDocument;
     procedure SaveTest(TestFileName: string);
     procedure ProcessTable(Layer: TDb2XmlDataLayer; table, OutFile: string);
+    procedure LayerTest(TableIndex, RuleIndex: integer);
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
     // Проверяет только перебор записей и сохранение для каждой записи ноды <Record/>
-    procedure NoLinesSimpleTest;
-    procedure OneLinesSimpleTest;
-    procedure TwoLinesSimpleTest;
+    procedure NoLinesTest;
+    procedure OneLinesTest;
+    procedure TwoLinesTest;
   end;
 
 
@@ -122,55 +123,41 @@ end;
 
 { TLayerTestCase }
 const
-  SimpleRules = 'RECORD';
-  FlatRules = 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c';
-  DeepRules =
-    'RECORD='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a';
+  Rules: array[0..2] of string = (
+      'RECORD'
+    , 'RECORD'#13#10' No_data'#13#10' No_Data2='#13#10'  #param_a=a'#13#10'  NODE_B=b'#13#10' Node_C=c'
+    , 'RECORD='#13#10' AA=a'#13#10' AAA='#13#10' BB=b'#13#10'  #c=c'#13#10' DD='#13#10'  DDD=d'#13#10'  ff=ff'#13#10'  A2=a'
+  );
 
-procedure TLayerTestCase.NoLinesSimpleTest;
+  RuleNames: array[0..2] of string = (
+      'simple'
+    , 'flat'
+    , 'deep'
+  );
+
+  TableNames: array[0..2] of string = (
+      'noRec'
+    , 'OneRec'
+    , 'TwoRec'
+  );
+
+procedure TLayerTestCase.LayerTest(TableIndex, RuleIndex: integer);
 Var
   Layer: TDb2XmlDataLayer;
 begin
   Layer := TDb2XmlDataLayer.Create(
-    SimpleRules,
+    Rules[RuleIndex],
     TestDb.Query);
   try
-    ProcessTable(Layer, 'TestData\NoRec.csv', 'simple0.xml');
+    ProcessTable(
+      Layer,
+      'TestData\' + TableNames[TableIndex] + '.csv',
+      RuleNames[RuleIndex] + IntToStr(TableIndex) +'.xml'
+    );
     SaveTest('simple0.xml');
   finally
     Layer.Free;
   end;
-end;
-
-procedure TLayerTestCase.OneLinesSimpleTest;
-Var
-  Layer: TDb2XmlDataLayer;
-begin
-  Layer := TDb2XmlDataLayer.Create(
-    SimpleRules,
-    TestDb.Query);
-  try
-    ProcessTable(Layer, 'TestData\OneRec.csv', 'simple1.xml');
-    SaveTest('simple1.xml');
-  finally
-    Layer.Free;
-  end;
-end;
-
-procedure TLayerTestCase.TwoLinesSimpleTest;
-Var
-  Layer: TDb2XmlDataLayer;
-begin
-  Layer := TDb2XmlDataLayer.Create(
-    SimpleRules,
-    TestDb.Query);
-  try
-    ProcessTable(Layer, 'TestData\TwoRec.csv', 'simple2.xml');
-    SaveTest('simple2.xml');
-  finally
-    Layer.Free;
-  end;
-
 end;
 
 procedure TLayerTestCase.ProcessTable(Layer: TDb2XmlDataLayer; table, OutFile: string);
@@ -213,6 +200,21 @@ begin
   end;
 
   CheckEqualsString(etalon, Test);
+end;
+
+procedure TLayerTestCase.NoLinesTest;
+begin
+  LayerTest(0, 0);
+end;
+
+procedure TLayerTestCase.OneLinesTest;
+begin
+  LayerTest(1, 0);
+end;
+
+procedure TLayerTestCase.TwoLinesTest;
+begin
+  LayerTest(2, 0);
 end;
 
 initialization
