@@ -26,6 +26,7 @@ uses
   ActiveX,
   Classes,
   Db2XML,
+  DDD_Str,
   XMLDoc, XMLIntf, DB, AdoDb;
 
 var
@@ -143,7 +144,7 @@ begin
     on e: Exception do
     begin
 
-      WriteLn(ErrOutput, e.Message);
+      WriteLn(ErrOutput, AnsiToOem(e.Message));
       if ExitCode = 0 then
         ExitCode := 1;
     end;

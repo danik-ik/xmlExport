@@ -2,6 +2,9 @@ unit DDD_Str;
 
 interface
 
+function AnsiToOem(const S: string): string;
+function OemToAnsi(const S: string): string;
+
 function CutString(delimiter: string;
   var Source: string; UseTrim: boolean=true): string;
 { Функция делит строку на две подстроки: до первого вхождения
@@ -38,7 +41,21 @@ function ExcludeComments(Source: string; OpenChars: string;
   то конец строки остаётся на месте. }
 
 implementation
-uses SysUtils;
+uses Windows, SysUtils;
+
+//Перекодировка ANSI->OEM
+function AnsiToOem(const S: string): string;
+begin
+  SetLength(Result,Length(S));
+  if Length(Result) > 0 then Windows.AnsiToOem(PChar(S),PChar(Result));
+end; //ConvertAnsiToOem
+
+//Перекодировка OEM->ANSI
+function OemToAnsi(const S: string): string;
+begin
+  SetLength(Result,Length(S));
+  if Length(Result) > 0 then Windows.OemToAnsi(PChar(S),PChar(Result));
+end; //ConvertOemToAnsi
 
 function AsIs(const S: string): string;
 begin
