@@ -89,8 +89,8 @@ end;
 
 procedure TDb2XmlDataLayer.OneRecordToXml(ParentNode: IXmlNode;
   Rules: String);
+
 var
-  Node: IXMLNode;
   sl: TStringList;
   i: integer;
   RuleLine: string;
@@ -98,6 +98,86 @@ var
   Level: integer;
   Levels: array of IXMLNode;
   CurrentLevel: integer;
+
+  procedure ProcessAttr(NodeName, DataField: string);
+  var
+    Node: IXMLNode;
+  begin
+    ///////
+    if Level = Length(Levels) - 1 then
+    begin
+      // Остальсь на том же уровне вложенности
+
+      Node := Levels[Level];
+
+      // Изменилось ли имя?
+      if NodeName <> Node.NodeName then
+      begin
+        Node := Node.ParentNode.AddChild(NodeName);
+        Levels[Level] := Node;
+      end;
+    end
+    else if Level > Length(Levels) - 1 then
+    begin
+      // Углубляемся
+      Node := Levels[Level-1].AddChild(NodeName);
+      SetLength(Levels, Level + 1);
+      Levels[Level] := Node;
+    end
+    else if Level < Length(Levels) - 1 then
+    begin
+      // Всплываем
+      Node := Levels[Level];
+      SetLength(Levels, Level + 1);
+      // Изменилось ли имя?
+      if NodeName <> Node.NodeName then
+      begin
+        Node := Node.ParentNode.AddChild(NodeName);
+        Levels[Level] := Node;
+      end;
+    end;
+  end;
+
+  procedure ProcessNode(NodeName, DataField: string);
+  var
+    Node: IXMLNode;
+  begin
+    if Level = Length(Levels) - 1 then
+    begin
+      // Остальсь на том же уровне вложенности
+
+      Node := Levels[Level];
+
+      // Изменилось ли имя?
+      if NodeName <> Node.NodeName then
+      begin
+        Node := Node.ParentNode.AddChild(NodeName);
+        Levels[Level] := Node;
+      end;
+    end
+    else if Level > Length(Levels) - 1 then
+    begin
+      // Углубляемся
+      Node := Levels[Level-1].AddChild(NodeName);
+      SetLength(Levels, Level + 1);
+      Levels[Level] := Node;
+    end
+    else if Level < Length(Levels) - 1 then
+    begin
+      // Всплываем
+      Node := Levels[Level];
+      SetLength(Levels, Level + 1);
+      // Изменилось ли имя?
+      if NodeName <> Node.NodeName then
+      begin
+        Node := Node.ParentNode.AddChild(NodeName);
+        Levels[Level] := Node;
+      end;
+    end;
+    if DataField <> '' then
+      Node.NodeValue := Dataset.FieldByName(DataField).Value;
+  end;
+
 begin
   try
     sl:=TStringList.Create;
@@ -119,38 +199,10 @@ begin
       NodeName := CutString('=',RuleLine);
       DataField := RuleLine;
 
-      if Level = Length(Levels) - 1 then
-      begin
-        // Остальсь на том же уровне вложенности
-
-        Node := Levels[Level];
-
-        // Изменилось ли имя?
-        if NodeName <> Node.NodeName then
-        begin
-          Node := Node.ParentNode.AddChild(NodeName);
-          Levels[Level] := Node;
-        end;
-      end
-      else if Level > Length(Levels) - 1 then
-      begin
-        // Углубляемся
-        Node := Levels[Level-1].AddChild(NodeName);
-        SetLength(Levels, Level + 1);
-        Levels[Level] := Node;
-      end
-      else if Level < Length(Levels) - 1 then
-      begin
-        // Всплываем
-        Node := Levels[Level];
-        SetLength(Levels, Level + 1);
-        // Изменилось ли имя?
-        if NodeName <> Node.NodeName then
-        begin
-          Node := Node.ParentNode.AddChild(NodeName);
-          Levels[Level] := Node;
-        end;
-      end
+      if NodeName[1] = '#' then
+        ProcessAttr
+      else
+        ProcessNode(NodeName, DataField);
     end;
 
   finally
