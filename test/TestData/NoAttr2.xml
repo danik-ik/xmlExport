@@ -6,7 +6,7 @@
       <NODE_B>BB</NODE_B>
     </No_Data2>
     <Node_C>CC</Node_C>
-    <Node_e>EE  <NODE_B>BB</NODE_B>
+    <Node_e>1  <NODE_B>BB</NODE_B>
     </Node_e>
   </RECORD>
   <RECORD>
@@ -15,7 +15,7 @@
       <NODE_B>бБ</NODE_B>
     </No_Data2>
     <Node_C>вВ</Node_C>
-    <Node_e>дД  <NODE_B>бБ</NODE_B>
+    <Node_e>2  <NODE_B>бБ</NODE_B>
     </Node_e>
   </RECORD>
 </ROOT_NAME>

@@ -109,7 +109,7 @@ var
     if DataField = '' then
       Data := ''
     else
-      Data := Dataset.FieldByName(DataField).Value;
+      Data := Dataset.FieldByName(DataField).AsString;
 
     Node.Attributes[AttrName] := Data;
   end;
@@ -151,7 +151,7 @@ var
       end;
     end;
     if DataField <> '' then
-      Node.NodeValue := Dataset.FieldByName(DataField).Value;
+      Node.NodeValue := Dataset.FieldByName(DataField).AsString;
   end;
 
 begin
