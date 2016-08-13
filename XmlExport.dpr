@@ -1,14 +1,10 @@
 program XmlExport;
 
-uses
-  Forms,
-  MainUnit in 'MainUnit.pas' {Form1},
-  Db2XML in 'Db2XML.pas';
+{$APPTYPE CONSOLE}
 
-{$R *.res}
+uses
+  SysUtils;
 
 begin
-  Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
-  Application.Run;
+  { TODO -oUser -cConsole Main : Insert code here }
 end.
