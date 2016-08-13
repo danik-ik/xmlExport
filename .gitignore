@@ -5,3 +5,5 @@
 *.ddp
 out/*
 sample/*
+curl/*
+error.log
