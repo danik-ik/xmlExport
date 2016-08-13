@@ -43,9 +43,9 @@ const
   CLI_ROOTPARAMS_N = 3;
 
   CLI_PARAMCOUNT = 3;
-  CLI_USAGE = 'Требуются параметры: имя выходного файла, имя корневого узла XML,'#13#10
-            + 'Параметры корневого узла XML.'#13#10
-            + 'Пример: XmlExport Distr_dist_000_01_Customer_xxx.xml DISTR_CONN_ID ID=dist_000_01';
+  CLI_USAGE = '╥Ёхсє■Єё  ярЁрьхЄЁ√: шь  т√їюфэюую Їрщыр, шь  ъюЁэхтюую єчыр XML,'#13#10
+            + '╧рЁрьхЄЁ√ ъюЁэхтюую єчыр XML.'#13#10
+            + '╧ЁшьхЁ: XmlExport Distr_dist_000_01_Customer_xxx.xml DISTR_CONN_ID ID=dist_000_01';
 
   CONNECTION_STRING = 'FILE NAME=.\data.udl';
   QUERY_FILE_NAME = '.\query.sql';
@@ -65,8 +65,8 @@ var
 
     If ParamCount <> CLI_PARAMCOUNT then
     begin
-      Writeln(CLI_USAGE);
-      raise Exception.Create('Неправильное количество параметров');
+      Writeln(AnsiToOem(CLI_USAGE));
+      raise Exception.Create('═хяЁртшы№эюх ъюышўхёЄтю ярЁрьхЄЁют фы  XmlExport');
     end;
 
     OutFileName := ParamStr(CLI_FILENAME_N);
