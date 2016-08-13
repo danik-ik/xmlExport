@@ -1,15 +1,18 @@
 @Echo off
+call usedate
+call sftpsetup
+set xmlfile=out\Distr_dist_000_01_Customer_%YYYY%%MM%%DD%%HH%%NN%00.xml
 
-XmlExport.exe out\Distr_dist_000_01_Customer_20160212210329.xml DISTR_CONN_ID ID=dist_000_01 2>>xmlout.err
+XmlExport.exe %xmlfile% DISTR_CONN_ID ID=dist_000_01 2>>xmlout.err
 if errorlevel 1 goto :XmlError
 del xmlout.err
 
-curl\curl.exe -k -s -S -v --libcurl libcurl.txt --user test:testo  -T out\Distr_dist_000_01_Customer_20160212210329.xml sftp://192.168.1.88/trololo/ 2>curlout.err
+curl\curl.exe -k -s -S -v --libcurl libcurl.txt --user %sftpUser%:%sftpPassw%  -T %xmlfile% %sftpserver% 2>curlout.err
 if errorlevel 1 goto :SftpError
 del curlout.err
 del libcurl.txt
 
-echo ╘юЁьшЁютрэшх XML ш т√ъырфър эр SFTP чртхЁ°хэ√ схч ю°шсюъ
+echo Формирование XML и выкладка на SFTP завершены без ошибок
 Exit
 
 :XmlError
