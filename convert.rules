@@ -19,14 +19,18 @@ CUSTOMER=
 		PRICE_LIST_TYPE=Price_list_type
 		PRICE_LIST_DESCR=Price_list_descr
 		ADDRESS
-			COUNTRY#NAME=Country_Name
-			COUNTRY#CODE=Country_code
-			REGION#NAME=Region_name
-			REGION#CODE=Region_code
-			CITY#NAME=City_name
-			CITY#CODE=City_code
+			COUNTRY
+				#NAME=Country_Name
+				#CODE=Country_code
+			REGION
+				#NAME=Region_name
+				#CODE=Region_code
+			CITY
+				#NAME=City_name
+				#CODE=City_code
 			ADDRESS=Address
-			POST_INDEX#CODE=Post_index
+			POST_INDEX
+				#CODE=Post_index
 	SHIP_TO=
 		CODE=ClientId
 		GEO_POS=
@@ -40,7 +44,7 @@ CUSTOMER=
 		BANNER=Banner
 		SQUARE=Square
 		ADDRESS=
-			ACTIVE_KL=Active_KL
+			#ACTIVE_KL=Active_KL
 			COUNTRY
 				#NAME=Country_name
 				#CODE=Country_code
@@ -54,8 +58,8 @@ CUSTOMER=
 				#NAME=City_name
 				#CODE=City_Code
 			COMMUNITY
-				#NAME=Commynuty_name
-				#CODE=Commynity_code
+				#NAME=Community_name
+				#CODE=Community_code
 			STREET
 				#NAME=Street_name
 				#CODE=Street_code
@@ -65,23 +69,31 @@ CUSTOMER=
 			HOUSE_NUM
 				#NAME=House_Num_name
 				#CODE=House_Num_code
-			BLOCK#NAME=Block_Name
-			BLOCK#CODE=Block_code
-			BUILDING#NAME=Building_name
-			BUILDING#CODE=Building_code
-			CR_STREET#NAME=
-			CR_STREET#CODE=
-			CR_STREET_TYPE#NAME=
-			CR_STREET_TYPE#CODE=
-			CR_HOUSE_NUM#NAME=
-			CR_HOUSE_NUM#CODE=
-			CR_BLOCK#NAME=
-			CR_BLOCK#CODE=
-			CR_BUILDING#NAME=
-			CR_BUILDING#CODE=
-			POST_INDEX#CODE=Post_Index
+			BLOCK
+				#NAME=Block_Name
+				#CODE=Block_code
+			BUILDING
+				#NAME=Building_name
+				#CODE=Building_code
+			CR_STREET
+				#NAME=
+				#CODE=
+			CR_STREET_TYPE
+				#NAME=
+				#CODE=
+			CR_HOUSE_NUM
+				#NAME=
+				#CODE=
+			CR_BLOCK
+				#NAME=
+				#CODE=
+			CR_BUILDING
+				#NAME=
+				#CODE=
+			POST_INDEX
+				#CODE=Post_Index
 			COMMENT=Comment
 		GLN=
 		GEO
 			LONGITUDE=Geo_Lng
-			LATITUDE=Geo_Lat
+			LATITUDE=Geo_Ltd

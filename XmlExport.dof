@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=
+RunParams=Distr_dist_000_01_Customer_20160212210329.xml DISTR_CONN_ID ID=dist_000_01
 HostApplication=
 Launcher=
 UseLauncher=0
