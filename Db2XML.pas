@@ -172,8 +172,8 @@ begin
     begin
       RuleLine := sl.Strings[i];
       // Игнор комментариев и пустых строк
-      if RuleLine[1] = ';' then break;
-      if trim(RuleLine) = '' then break;
+      if RuleLine[1] = ';' then Continue;
+      if trim(RuleLine) = '' then Continue;
 
       Level := Length(RuleLine) - length(TrimLeft(RuleLine)) + 1;
 
